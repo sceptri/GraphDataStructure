@@ -11,6 +11,11 @@ int main()
     graph.addVertex(3);
     graph.addEdge(2,3);
     graph.addEdge(2,3);
-    std::cout << graph.getEdge(1,3).from << std::endl;
+
+    VertexEdges v_edges = graph.inEdges(3);
+    for(int i = 0; i < v_edges.num; i++)
+    {
+        std::cout << "[" << v_edges.edges[i].from <<", " << v_edges.edges[i].to << "]; " << std::endl;
+    }
     return 0;
 }

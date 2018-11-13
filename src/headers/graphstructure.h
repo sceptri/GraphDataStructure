@@ -2,6 +2,8 @@
 #define GRAPHSTRUCUTURE_H
 #pragma once
 
+//Add function called removeDoubles, check memory
+
 struct Edge
 {
     Edge(int v_from, int v_to);

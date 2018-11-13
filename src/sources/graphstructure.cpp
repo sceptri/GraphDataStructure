@@ -113,8 +113,6 @@ bool Graph::addEdge(int v, int u)
     Edge edge = {v, u};
     edges = pushToArr(edges, edge, edge_count++);
 
-    edge_count -= removeSelfLoops(edges, edge_count);
-
     return true;
 }
 
