@@ -14,12 +14,14 @@ struct Edge
 
     bool operator==(const Edge & edge);
     friend bool operator==(const Edge & edge1, const Edge & edge2);
+
+    Edge& operator=(const Edge & edge);
 };
 
 struct VertexEdges
 {
     int num;
-    Edge * edges;
+    Edge* & edges;
 
     ~VertexEdges();
 };
@@ -43,6 +45,9 @@ public:
     bool removeVertex(int v);
     bool removeEdge(int v, int u);
 
+    int getVertexCount();
+    int getEdgeCount();
+
 private:
     template<typename T>
     T* & pushToArr(T* & arr, T element, int old_arr_length);
@@ -51,6 +56,8 @@ private:
     T* & pullFromArr(T* & arr, T element, int old_arr_length);
         //sl_egdes - self loop edges
     int removeSelfLoops(Edge* & sl_edges, int length);//return number of removed edges
+
+    int removeDoubles(Edge* & d_edges, int length);
 
     int edge_count;
     int vertex_count;

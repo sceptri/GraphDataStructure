@@ -1,4 +1,5 @@
 #include "graphstructure.h"
+#include <iostream>
 
 
 //-----------------Edge functions-------------------------
@@ -26,6 +27,14 @@ bool operator==(const Edge & edge1, const Edge & edge2)
     }
 }
 
+Edge& Edge::operator=(const Edge & edge)
+{
+    this->from = edge.from;
+    this->to = edge.to;
+
+    return *this;
+}
+
 Edge::Edge(int v_from, int v_to)
 {
     from = v_from;
@@ -39,7 +48,11 @@ Edge::Edge() : to(0), from(0)
 //----------------VertexEdges functions-------------------
 VertexEdges::~VertexEdges()
 {
-    delete [] edges;
+    std::cout << "destructor of vertexEdges" << std::endl;
+    if(num > 0)
+    {
+        delete [] edges;
+    }
 }
 
 
@@ -47,12 +60,20 @@ VertexEdges::~VertexEdges()
 //----------------Graph functions-------------------------
 Graph::Graph() : edge_count(0), vertex_count(0)
 {
+
 }
 
 Graph::~Graph()
 {
-    delete vertices;
-    delete [] edges;
+    std::cout << "destructor of Graph" << std::endl;
+    if(vertex_count > 0)
+    {
+        delete vertices;
+    }
+    if(edge_count > 0)
+    {
+        delete [] edges;
+    }
 }
 
 Graph::Graph(Graph & graph) : edge_count(0), vertex_count(0)
@@ -110,8 +131,11 @@ bool Graph::addEdge(int v, int u)
         }
     }
 
-    Edge edge = {v, u};
+    Edge edge = Edge(v, u);
     edges = pushToArr(edges, edge, edge_count++);
+
+    edge_count -= removeDoubles(edges, edge_count);
+    edge_count -= removeSelfLoops(edges, edge_count);
 
     return true;
 }
@@ -148,8 +172,6 @@ bool Graph::removeVertex(int v)
             edges_to_delete = pushToArr(edges_to_delete, getEdge(v, i), length++);
         }
     }
-
-    length -= removeSelfLoops(edges_to_delete, length);
     for(int i = 0; i < length; i++)
     {
         edges = pullFromArr(edges, edges_to_delete[i], edge_count--);
@@ -182,7 +204,7 @@ bool Graph::removeEdge(int v, int u)
         }
     }
 
-    Edge edge = {v, u};
+    Edge edge = Edge(v, u);
     edges = pullFromArr(edges, edge, edge_count--);
 
     return true;
@@ -190,8 +212,8 @@ bool Graph::removeEdge(int v, int u)
 
 bool Graph::adjacent(int u, int v)
 {
-    Edge edge1 = {u, v};
-    Edge edge2 = {v, u};
+    Edge edge1 = Edge(u, v);
+    Edge edge2 = Edge(v, u);
     for(int i = 0; i < edge_count; i++)
     {
         if(edges[i] == edge1 || edges[i] == edge2)
@@ -205,7 +227,10 @@ bool Graph::adjacent(int u, int v)
 
 VertexEdges Graph::inEdges(int v)
 {
-    VertexEdges v_edges = {0,0};
+    Edge * error  = new Edge[1];
+    error[0].from = -1;
+    error[0].to = -1;
+    VertexEdges v_edges = {1, error};
 
     for(int i = 0; i < edge_count; i++)
     {
@@ -214,13 +239,17 @@ VertexEdges Graph::inEdges(int v)
             v_edges.edges = pushToArr(v_edges.edges, edges[i], v_edges.num++);
         }
     }
+    v_edges.num -= removeSelfLoops(v_edges.edges, v_edges.num);
 
     return v_edges;
 }
 
 VertexEdges Graph::outEdges(int v)
 {
-    VertexEdges v_edges = {0,0};
+    Edge * error  = new Edge[1];
+    error[0].from = -1;
+    error[0].to = -1;
+    VertexEdges v_edges = {1, error};
 
     for(int i = 0; i < edge_count; i++)
     {
@@ -229,13 +258,13 @@ VertexEdges Graph::outEdges(int v)
             v_edges.edges = pushToArr(v_edges.edges, edges[i], v_edges.num++);
         }
     }
-
+    v_edges.num -= removeSelfLoops(v_edges.edges, v_edges.num);
     return v_edges;
 }
 
 Edge& Graph::getEdge(int v, int u)
 {
-    Edge edge = {v, u};
+    Edge edge = Edge(v, u);
     for(int i = 0; i < edge_count; i++)
     {
         if(edges[i] == edge)
@@ -246,6 +275,16 @@ Edge& Graph::getEdge(int v, int u)
 
     static Edge error = {-1, -1};
     return error;
+}
+
+int Graph::getVertexCount()
+{
+    return vertex_count;
+}
+
+int Graph::getEdgeCount()
+{
+    return edge_count;
 }
 
 //private
@@ -308,6 +347,7 @@ T* & Graph::pullFromArr(T* & arr, T element, int old_arr_length)
 
 int Graph::removeSelfLoops(Edge* & sl_edges, int length)
 {
+    std::cout << "Remove self loops" << std::endl;
     int removed = 0;
 
     for(int i = 0; i < length; i++)
@@ -318,6 +358,26 @@ int Graph::removeSelfLoops(Edge* & sl_edges, int length)
             removed++;
         }
     }
+    std::cout << removed << std::endl;
+    
+    return removed;
+}
 
+int Graph::removeDoubles(Edge* & d_edges, int length)
+{
+    std::cout << "Remove doubles" << std::endl;
+    int removed = 0;
+    for(int i = 0; i < length; i++)
+    {
+        for(int j = i+1; j < length; j++)
+        {
+            if(edges[j] == edges[i])
+            {
+                d_edges = pullFromArr(d_edges, d_edges[j], length--);
+                removed++;
+            }
+        }
+    }
+    std::cout << removed << std::endl;
     return removed;
 }
