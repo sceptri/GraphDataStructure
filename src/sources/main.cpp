@@ -6,14 +6,16 @@ using namespace std;
 int main()
 {
     Graph graph;
-    graph.addVertex(2);
-    graph.addVertex(3);
-    graph.addVertex(3);
+    std::cout << "Adding Vertex(2): "<< graph.addVertex(2) << std::endl;
+    std::cout << "Adding Vertex(3): "<< graph.addVertex(3) << std::endl;
+    std::cout << "Adding Vertex(3): "<< graph.addVertex(3) << std::endl;
+    
+    std::cout << "Vertex Count: " << graph.getVertexCount() << std::endl;
+
     std::cout << "Adding Edge1: "<< graph.addEdge(2,3) << std::endl;
     std::cout << "E count: " << graph.getEdgeCount() << std::endl;
     std::cout << "Adding Edge2: "<< graph.addEdge(2,3) << std::endl;
     
-    std::cout <<"V count: " << graph.getVertexCount() << std::endl;
     std::cout << "E count: " << graph.getEdgeCount() << std::endl;
 
     std::cout << "getting inEdges" << std::endl;

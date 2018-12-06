@@ -40,7 +40,7 @@ public:
     VertexEdges outEdges(int v);
     //int getOpposite(int v, int* edge);
     Edge& getEdge(int v, int u); //Returns (v,u) if it exists, never (u,v)
-    void addVertex(int value);
+    bool addVertex(int value);
     bool addEdge(int v, int u);
     bool removeVertex(int v);
     bool removeEdge(int v, int u);

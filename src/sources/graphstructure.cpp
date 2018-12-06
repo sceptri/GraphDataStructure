@@ -85,7 +85,7 @@ Graph & Graph::operator=(Graph  & graph)
     return *this;
 }
 
-void Graph::addVertex(int value)
+bool Graph::addVertex(int value)
 {
     if(vertex_count > 0)
     {
@@ -93,7 +93,7 @@ void Graph::addVertex(int value)
         {
             if(vertices[i] == value)
             {
-                return;
+                return false;
             }
         }
 
@@ -105,6 +105,8 @@ void Graph::addVertex(int value)
         vertices[0] = value;
         vertex_count++;
     }
+
+    return true;
 }
 
 bool Graph::addEdge(int v, int u)
@@ -134,8 +136,25 @@ bool Graph::addEdge(int v, int u)
     Edge edge = Edge(v, u);
     edges = pushToArr(edges, edge, edge_count++);
 
+    std::cout <<  "Edge Count(INSIDE addEdge): " << getEdgeCount() << std::endl;
+
+    for (int i = 0; i < edge_count; i++)
+    {
+        std::cout << "(" << edges[i].from << ", " << edges[i].to << ")" << std::endl; 
+    }
+
     edge_count -= removeDoubles(edges, edge_count);
+    for (int i = 0; i < edge_count; i++)
+    {
+        std::cout << "(" << edges[i].from << ", " << edges[i].to << ")" << std::endl; 
+    }
+
     edge_count -= removeSelfLoops(edges, edge_count);
+    for (int i = 0; i < edge_count; i++)
+    {
+        std::cout << "(" << edges[i].from << ", " << edges[i].to << ")" << std::endl; 
+    }
+
 
     return true;
 }
@@ -167,7 +186,7 @@ bool Graph::removeVertex(int v)
     for(int i = 0; i < vertex_count; i++)
     {
         if(adjacent(i, v))
-        {
+        { 
             edges_to_delete = pushToArr(edges_to_delete, getEdge(i, v), length++);
             edges_to_delete = pushToArr(edges_to_delete, getEdge(v, i), length++);
         }
@@ -347,7 +366,6 @@ T* & Graph::pullFromArr(T* & arr, T element, int old_arr_length)
 
 int Graph::removeSelfLoops(Edge* & sl_edges, int length)
 {
-    std::cout << "Remove self loops" << std::endl;
     int removed = 0;
 
     for(int i = 0; i < length; i++)
@@ -358,26 +376,41 @@ int Graph::removeSelfLoops(Edge* & sl_edges, int length)
             removed++;
         }
     }
-    std::cout << removed << std::endl;
+    std::cout << "Removed self loops: " << removed << std::endl;
     
     return removed;
 }
 
 int Graph::removeDoubles(Edge* & d_edges, int length)
 {
-    std::cout << "Remove doubles" << std::endl;
+    std::cout << "Removed doubles: " << std::endl;
+    std::cout << "length: " << length << std::endl;
     int removed = 0;
+
+    for (int i = 0; i < length; i++)
+    {
+        std::cout << "(" << d_edges[i].from << ", " << d_edges[i].to << ")" << std::endl; 
+    }
+
     for(int i = 0; i < length; i++)
     {
+        std::cout << "i: " << i <<std::endl;
+
         for(int j = i+1; j < length; j++)
         {
-            if(edges[j] == edges[i])
+            std::cout << "j: " << j <<std::endl;
+            if(d_edges[j] == d_edges[i])
             {
                 d_edges = pullFromArr(d_edges, d_edges[j], length--);
                 removed++;
+
+                for (int i = 0; i < length; i++)
+                {
+                    std::cout << "(" << d_edges[i].from << ", " << d_edges[i].to << ")" << std::endl; 
+                }
             }
         }
     }
-    std::cout << removed << std::endl;
+    std::cout << "Removed doubles: " << removed << std::endl;
     return removed;
 }
