@@ -2,3 +2,6 @@
 /.settings/*
 .project
 .cproject
+/bin-int/*
+Makefile
+GraphStructure.make
