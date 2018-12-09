@@ -2,6 +2,4 @@
 
 My try at doing graph data structure
 
-I may be doing everything wrong, but hopefully I'm not :)
-
-I need to add commments like everywhere though
+It's incorrectly done as array, not as linked list so it will need to be reworked, but probably in different repository
