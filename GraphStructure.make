@@ -38,6 +38,8 @@ all: prebuild prelink $(TARGET)
 endif
 
 OBJECTS := \
+	$(OBJDIR)/graphstructure.o \
+	$(OBJDIR)/main.o \
 
 RESOURCES := \
 
@@ -96,6 +98,12 @@ else
 $(OBJECTS): | $(OBJDIR)
 endif
 
+$(OBJDIR)/graphstructure.o: src/sources/graphstructure.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/main.o: src/sources/main.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
 ifneq (,$(PCH))

@@ -21,8 +21,8 @@ project "GraphStructure"
 
     files
 	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"src/**.h",
+		"src/**.cpp"
 	}
 
     includedirs
