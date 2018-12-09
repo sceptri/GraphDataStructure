@@ -11,6 +11,9 @@ endif
 ifeq ($(config),debug)
   GraphStructure_config = debug
 endif
+ifeq ($(config),release)
+  GraphStructure_config = release
+endif
 
 PROJECTS := GraphStructure
 
@@ -32,6 +35,7 @@ help:
 	@echo ""
 	@echo "CONFIGURATIONS:"
 	@echo "  debug"
+	@echo "  release"
 	@echo ""
 	@echo "TARGETS:"
 	@echo "   all (default)"

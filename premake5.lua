@@ -3,7 +3,8 @@ workspace "GraphDataStructure"
 
     configurations
     {
-        "Debug"
+        "Debug",
+	"Release"
     }
 
     files
@@ -32,3 +33,9 @@ project "GraphStructure"
 
     filter "system:linux"
         buildoptions {"-std=c++17"}
+    
+    filter "configurations:Debug"
+		symbols "On"
+
+	filter "configurations:Release"
+		optimize "On"

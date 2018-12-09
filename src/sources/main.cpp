@@ -28,5 +28,6 @@ int main()
     {
         std::cout << "[" << v_edges.edges[i].from <<", " << v_edges.edges[i].to << "]; " << std::endl;
     }
+
     return 0;
 }

@@ -46,6 +46,15 @@ Edge::Edge() : to(0), from(0)
 }
 
 //----------------VertexEdges functions-------------------
+VertexEdges::VertexEdges()
+{
+	Edge * err_edges  = new Edge[1];
+	err_edges[0].from = -1;
+	err_edges[0].to = -1;
+	this->edges = err_edges;
+	this->num = 1;
+}
+
 VertexEdges::~VertexEdges()
 {
     std::cout << "destructor of vertexEdges" << std::endl;
@@ -60,7 +69,11 @@ VertexEdges::~VertexEdges()
 //----------------Graph functions-------------------------
 Graph::Graph() : edge_count(0), vertex_count(0)
 {
+	vertices = new int[++vertex_count];
+	vertices[0] = -1;
 
+	edges = new Edge[++edge_count];
+	edges[0] = Edge(-1, -1);
 }
 
 Graph::~Graph()
@@ -78,6 +91,11 @@ Graph::~Graph()
 
 Graph::Graph(Graph & graph) : edge_count(0), vertex_count(0)
 {
+	vertices = new int[++vertex_count];
+	vertices[0] = -1;
+
+	edges = new Edge[++edge_count];
+	edges[0] = Edge(-1, -1);
 }
 
 Graph & Graph::operator=(Graph  & graph)
@@ -85,26 +103,18 @@ Graph & Graph::operator=(Graph  & graph)
     return *this;
 }
 
-bool Graph::addVertex(int value)
+bool Graph::addVertex(unsigned int value)
 {
-    if(vertex_count > 0)
+	for(int i = 0; i < vertex_count; i++)
     {
-        for(int i = 0; i < vertex_count; i++)
+		if(vertices[i] == value)
         {
-            if(vertices[i] == value)
-            {
-                return false;
-            }
+			return false;
         }
+    }
 
-        vertices = pushToArr(vertices, value, vertex_count++);
-    }
-    else
-    {
-        vertices = new int[1];
-        vertices[0] = value;
-        vertex_count++;
-    }
+    pushToArr(vertices, int(value), vertex_count);
+
 
     return true;
 }
@@ -134,7 +144,7 @@ bool Graph::addEdge(int v, int u)
     }
 
     Edge edge = Edge(v, u);
-    edges = pushToArr(edges, edge, edge_count++);
+    pushToArr(edges, edge, edge_count);
 
     std::cout <<  "Edge Count(INSIDE addEdge): " << getEdgeCount() << std::endl;
 
@@ -143,13 +153,13 @@ bool Graph::addEdge(int v, int u)
         std::cout << "(" << edges[i].from << ", " << edges[i].to << ")" << std::endl; 
     }
 
-    edge_count -= removeDoubles(edges, edge_count);
+    removeDoubles(edges, edge_count);
     for (int i = 0; i < edge_count; i++)
     {
         std::cout << "(" << edges[i].from << ", " << edges[i].to << ")" << std::endl; 
     }
 
-    edge_count -= removeSelfLoops(edges, edge_count);
+    removeSelfLoops(edges, edge_count);
     for (int i = 0; i < edge_count; i++)
     {
         std::cout << "(" << edges[i].from << ", " << edges[i].to << ")" << std::endl; 
@@ -178,7 +188,7 @@ bool Graph::removeVertex(int v)
         return false;
     }
 
-    vertices = pullFromArr(vertices, v, vertex_count--);
+    pullFromArr(vertices, v, vertex_count);
 
     Edge* edges_to_delete = 0;
     int length = 0;
@@ -187,13 +197,13 @@ bool Graph::removeVertex(int v)
     {
         if(adjacent(i, v))
         { 
-            edges_to_delete = pushToArr(edges_to_delete, getEdge(i, v), length++);
-            edges_to_delete = pushToArr(edges_to_delete, getEdge(v, i), length++);
+            pushToArr(edges_to_delete, getEdge(i, v), length);
+            pushToArr(edges_to_delete, getEdge(v, i), length);
         }
     }
     for(int i = 0; i < length; i++)
     {
-        edges = pullFromArr(edges, edges_to_delete[i], edge_count--);
+        pullFromArr(edges, edges_to_delete[i], edge_count);
     }
 
     return true;
@@ -224,7 +234,7 @@ bool Graph::removeEdge(int v, int u)
     }
 
     Edge edge = Edge(v, u);
-    edges = pullFromArr(edges, edge, edge_count--);
+    pullFromArr(edges, edge, edge_count);
 
     return true;
 }
@@ -246,38 +256,33 @@ bool Graph::adjacent(int u, int v)
 
 VertexEdges Graph::inEdges(int v)
 {
-    Edge * error  = new Edge[1];
-    error[0].from = -1;
-    error[0].to = -1;
-    VertexEdges v_edges = {1, error};
+
+    VertexEdges v_edges = VertexEdges();
 
     for(int i = 0; i < edge_count; i++)
     {
         if(edges[i].to == v)
         {
-            v_edges.edges = pushToArr(v_edges.edges, edges[i], v_edges.num++);
+            pushToArr(v_edges.edges, edges[i], v_edges.num);
         }
     }
-    v_edges.num -= removeSelfLoops(v_edges.edges, v_edges.num);
+    removeSelfLoops(v_edges.edges, v_edges.num);
 
     return v_edges;
 }
 
 VertexEdges Graph::outEdges(int v)
 {
-    Edge * error  = new Edge[1];
-    error[0].from = -1;
-    error[0].to = -1;
-    VertexEdges v_edges = {1, error};
+	VertexEdges v_edges = VertexEdges();
 
     for(int i = 0; i < edge_count; i++)
     {
-        if(edges[i].from == v)
+       if(edges[i].from == v)
         {
-            v_edges.edges = pushToArr(v_edges.edges, edges[i], v_edges.num++);
+            pushToArr(v_edges.edges, edges[i], v_edges.num);
         }
     }
-    v_edges.num -= removeSelfLoops(v_edges.edges, v_edges.num);
+    removeSelfLoops(v_edges.edges, v_edges.num);
     return v_edges;
 }
 
@@ -296,6 +301,8 @@ Edge& Graph::getEdge(int v, int u)
     return error;
 }
 
+// ------------------ getters -----------------------
+
 int Graph::getVertexCount()
 {
     return vertex_count;
@@ -306,50 +313,57 @@ int Graph::getEdgeCount()
     return edge_count;
 }
 
-//private
+// ------------------- private ----------------------
 template<typename T>
-T* & Graph::pushToArr(T* & arr, T element, int old_arr_length)
+void Graph::pushToArr(T* & arr, T element, int & arr_length)
 {
-    if(old_arr_length == 0)
+    if(arr_length == 0)
     {
-        arr = new T[old_arr_length+1];
-        arr[old_arr_length] = element;
+        arr = new T[++arr_length];
+        arr[0] = element;
     }
     else
     {
         T * temp_arr = arr;
-        arr = new T[old_arr_length+1];
+        arr = new T[++arr_length];
 
-        for(int i = 0; i < old_arr_length; i++)
+        for(int i = 0; i < arr_length; i++)
         {
-            arr[i] = temp_arr[i];
+        	if(i == arr_length-1)
+        	{
+        		arr[i] = element;
+        	}
+        	else
+        	{
+        		arr[i] = temp_arr[i];
+        	}
         }
-
-        arr[old_arr_length] = element;
 
         delete [] temp_arr;
     }
 
-    return arr;
 }
 
 template<typename T>
-T* & Graph::pullFromArr(T* & arr, T element, int old_arr_length)
+void Graph::pullFromArr(T* & arr, T element, int & arr_length)
 {
-    if(old_arr_length < 1)
+    if(arr_length < 1)
     {
-       return  arr;
+       return;
     }
     else
     {
         T * temp_arr = arr;
-        arr = new T[old_arr_length-1];
+        arr = new T[--arr_length];
+
+        bool isRemoved = false;
 
         int index = 0;
-        for(int i = 0; i < old_arr_length; i++)
+        for(int i = 0; i <= arr_length; i++)
         {
-            if(temp_arr[i] == element)
+            if(temp_arr[i] == element && !isRemoved)
             {
+            	isRemoved = true;
                 continue;
             }
             else
@@ -360,11 +374,10 @@ T* & Graph::pullFromArr(T* & arr, T element, int old_arr_length)
 
         delete [] temp_arr;
 
-        return arr;
     }
 }
 
-int Graph::removeSelfLoops(Edge* & sl_edges, int length)
+int Graph::removeSelfLoops(Edge* & sl_edges, int & length)
 {
     int removed = 0;
 
@@ -372,7 +385,7 @@ int Graph::removeSelfLoops(Edge* & sl_edges, int length)
     {
         if(sl_edges[i].to == sl_edges[i].from)
         {
-            sl_edges = pullFromArr(sl_edges, sl_edges[i], length--);
+            pullFromArr(sl_edges, sl_edges[i], length);
             removed++;
         }
     }
@@ -381,7 +394,7 @@ int Graph::removeSelfLoops(Edge* & sl_edges, int length)
     return removed;
 }
 
-int Graph::removeDoubles(Edge* & d_edges, int length)
+int Graph::removeDoubles(Edge* & d_edges, int & length)
 {
     std::cout << "Removed doubles: " << std::endl;
     std::cout << "length: " << length << std::endl;
@@ -401,7 +414,7 @@ int Graph::removeDoubles(Edge* & d_edges, int length)
             std::cout << "j: " << j <<std::endl;
             if(d_edges[j] == d_edges[i])
             {
-                d_edges = pullFromArr(d_edges, d_edges[j], length--);
+                pullFromArr(d_edges, d_edges[j], length);
                 removed++;
 
                 for (int i = 0; i < length; i++)

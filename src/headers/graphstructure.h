@@ -21,8 +21,9 @@ struct Edge
 struct VertexEdges
 {
     int num;
-    Edge* & edges;
+    Edge * edges;
 
+    VertexEdges();
     ~VertexEdges();
 };
 
@@ -40,7 +41,7 @@ public:
     VertexEdges outEdges(int v);
     //int getOpposite(int v, int* edge);
     Edge& getEdge(int v, int u); //Returns (v,u) if it exists, never (u,v)
-    bool addVertex(int value);
+    bool addVertex(unsigned int value);
     bool addEdge(int v, int u);
     bool removeVertex(int v);
     bool removeEdge(int v, int u);
@@ -50,14 +51,14 @@ public:
 
 private:
     template<typename T>
-    T* & pushToArr(T* & arr, T element, int old_arr_length);
+    void pushToArr(T* & arr, T element, int & arr_length);
 
     template<typename T>
-    T* & pullFromArr(T* & arr, T element, int old_arr_length);
+    void pullFromArr(T* & arr, T element, int & arr_length);
         //sl_egdes - self loop edges
-    int removeSelfLoops(Edge* & sl_edges, int length);//return number of removed edges
+    int removeSelfLoops(Edge* & sl_edges, int & length);//return number of removed edges
 
-    int removeDoubles(Edge* & d_edges, int length);
+    int removeDoubles(Edge* & d_edges, int & length);
 
     int edge_count;
     int vertex_count;
